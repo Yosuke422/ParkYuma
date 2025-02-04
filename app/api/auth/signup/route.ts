@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         prenom,
         nom,
-        role: 'USER' // Utilisateur normal
+        role: 'USER' 
       }
     })
 
