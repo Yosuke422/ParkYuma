@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Schéma Prisma pour la base de données
+model User {
+  id        Int      @id @default(autoincrement())
+  prenom    String
+  nom       String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  reservations Reservation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TypeActivite {
+  id        Int        @id @default(autoincrement())
+  nom       String
+  activites Activite[]
+}
+
+model Activite {
+  id                Int           @id @default(autoincrement())
+  nom              String
+  type             TypeActivite   @relation(fields: [typeId], references: [id])
+  typeId           Int
+  placesDisponibles Int
+  description      String
+  datetimeDebut    DateTime
+  duree            Int           // en minutes
+  reservations     Reservation[]
+}
+
+model Reservation {
+  id              Int      @id @default(autoincrement())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int
+  activite        Activite @relation(fields: [activiteId], references: [id])
+  activiteId      Int
+  dateReservation DateTime @default(now())
+  etat            Boolean  @default(true)
+}
+
+enum Role {
+  USER
+  ADMIN
+} 
