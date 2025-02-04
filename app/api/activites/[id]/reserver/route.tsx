@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../auth/[...nextauth]/route'
-import { PrismaClient } from '@prisma/client'
 
 export async function POST(
   request: Request,
@@ -30,8 +29,8 @@ export async function POST(
       where: { email: session.user.email }
     })
 
-    // Créer la réservation et mettre à jour les places disponibles
-    const reservation = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>) => {
+    // Create the reservation and update available places in a transaction
+    const reservation = await prisma.$transaction(async (tx) => {
       const reservation = await tx.reservation.create({
         data: {
           userId: user!.id,
@@ -43,9 +42,7 @@ export async function POST(
       await tx.activite.update({
         where: { id: activite.id },
         data: {
-          placesDisponibles: {
-            decrement: 1
-          }
+          placesDisponibles: { decrement: 1 }
         }
       })
 
@@ -57,4 +54,4 @@ export async function POST(
     console.error('Erreur réservation:', error)
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
-} 
+}
