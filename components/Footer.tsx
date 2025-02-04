@@ -23,7 +23,7 @@ export default function Footer() {
           <div className="footer-section">
             <h3 className="footer-title">Liens utiles</h3>
             <ul className="footer-list">
-              <li><a href="/activites">Nos activités</a></li>
+              <li><a href="/activites">Les activités</a></li>
               <li><a href="/conditions">Conditions générales</a></li>
               <li><a href="/confidentialite">Politique de confidentialité</a></li>
             </ul>
@@ -36,4 +36,4 @@ export default function Footer() {
       </div>
     </footer>
   )
-} 
+}

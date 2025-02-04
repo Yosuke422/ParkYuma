@@ -157,21 +157,77 @@ main {
 }
 
 /* Form styles */
-.form {
+/* --- Enhanced Modal Styles --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.form-label {
-  font-weight: 500;
-  color: var(--gray-700);
+.modal-content {
+  background: var(--gray-50);
+  padding: 2rem 2.5rem;
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: var(--primary-color);
+}
+
+.modal-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.modal-form .form-group {
+  margin-bottom: 1rem;
+}
+
+
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .form-input {
@@ -179,15 +235,19 @@ main {
   border: 1px solid var(--gray-200);
   border-radius: 0.5rem;
   transition: all 0.2s ease;
+  width: 100%;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 
-    0 0 0 3px var(--primary-light),
-    0 0 20px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
+
+.form-label {
+  color: var(--gray-800);
+}
+
 
 /* Hero section */
 .hero {
@@ -396,28 +456,21 @@ main {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
-/* Navigation */
+/* --- Navigation Enhancements --- */
 .main-nav {
   background: white;
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
-  z-index: 100;
-  transition: all 0.3s ease;
+  z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  padding: 0.5rem 0;
 }
 
 .main-nav:hover {
   box-shadow: var(--shadow-md);
 }
 
-/* Styles adaptés au mode sombre */
-[data-theme="dark"] .main-nav {
-  background: var(--background-card);
-  border-bottom: 1px solid var(--border-color);
-}
-
-/* Navigation styles */
 .nav-container {
   display: flex;
   justify-content: space-between;
@@ -426,11 +479,11 @@ main {
 }
 
 .nav-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: bold;
   color: var(--primary-color);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
 }
 
 .nav-logo:hover {
@@ -447,19 +500,77 @@ main {
   color: var(--gray-600);
   text-decoration: none;
   font-weight: 500;
-  padding: 0.5rem;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-  color: var(--gray-800);
+  color: var(--primary-color);
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
 
 .nav-link.active {
   color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
 }
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-button {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.nav-button:hover {
+  background: var(--primary-hover);
+}
+
+/* If you want a primary variant for nav buttons */
+.nav-button-primary {
+  background: var(--primary-color);
+}
+
+.nav-button-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Responsive adjustments (if needed) */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* Styles adaptés au mode sombre */
+[data-theme="dark"] .main-nav {
+  background: var(--background-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+
 
 /* Auth pages */
 .auth-container {
@@ -534,7 +645,6 @@ main {
   animation: pageEnter 0.4s ease-out;
 }
 
-/* Effets de hover améliorés pour les cartes */
 
 
 
@@ -638,4 +748,90 @@ main {
 [data-theme="dark"] .theme-toggle:hover {
   color: var(--text-primary);
   background: var(--background-elevated);
+}
+
+/* Footer Styles */
+.site-footer {
+  background: var(--background-card);
+  padding: 2rem 0;
+  color: var( --gray-200);
+  border-top: 1px solid var(--gray-200);
+  margin-top: 2rem;
+}
+
+.site-footer .container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+.footer-title:hover {
+  color: var(--primary-hover);
+}
+
+.footer-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.footer-list li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-list li a {
+  color: var(--gray-200);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-list li a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .footer-section {
+    text-align: center;
+  }
 }

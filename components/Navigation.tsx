@@ -17,31 +17,40 @@ export default function Navigation() {
         </Link>
 
         <div className="nav-links">
-          <Link 
-            href="/activites" 
+          <Link
+            href="/activites"
             className={`nav-link ${pathname === '/activites' ? 'active' : ''}`}
           >
-            Nos activités
+            Les activités
           </Link>
+
+          {session && (
+            <Link
+              href="/mes-activites"
+              className={`nav-link ${pathname === '/mes-activites' ? 'active' : ''}`}
+            >
+              Mes activités
+            </Link>
+          )}
 
           {session ? (
             <>
               {session.user?.role === 'ADMIN' && (
-                <Link 
-                  href="/admin/activites" 
+                <Link
+                  href="/admin/activites"
                   className={`nav-link ${pathname.startsWith('/admin') ? 'active' : ''}`}
                 >
                   Administration
                 </Link>
               )}
-              
-              <Link 
-                href="/mon-compte" 
+
+              <Link
+                href="/mon-compte"
                 className={`nav-link ${pathname === '/mon-compte' ? 'active' : ''}`}
               >
                 Mon compte
               </Link>
-              
+
               <button onClick={() => signOut()} className="nav-button">
                 Déconnexion
               </button>
@@ -51,7 +60,7 @@ export default function Navigation() {
               <Link href="/login" className="nav-button">
                 Connexion
               </Link>
-              <Link href="/register" className="nav-button nav-button-primary">
+              <Link href="/signup" className="nav-button nav-button-primary">
                 Inscription
               </Link>
             </>
@@ -59,23 +68,24 @@ export default function Navigation() {
 
           {session?.user?.role === 'ADMIN' && (
             <>
-              <Link 
-                href="/admin/activites" 
+              <Link
+                href="/admin/activites"
                 className={`nav-link ${pathname.startsWith('/admin/activites') ? 'active' : ''}`}
               >
                 Gestion activités
               </Link>
-              <Link 
-                href="/admin/utilisateurs" 
+              <Link
+                href="/admin/utilisateurs"
                 className={`nav-link ${pathname.startsWith('/admin/utilisateurs') ? 'active' : ''}`}
               >
                 Gestion utilisateurs
               </Link>
             </>
           )}
+
           <ThemeToggle />
         </div>
       </div>
     </nav>
   )
-} 
+}
