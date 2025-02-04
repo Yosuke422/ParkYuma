@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -12,12 +12,33 @@ export default function MonCompte() {
   const { data: session, update } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [reservations, setReservations] = useState<ReservationWithActivite[]>([])
 
   const [formData, setFormData] = useState({
     prenom: session?.user?.prenom || '',
     nom: session?.user?.nom || '',
     email: session?.user?.email || ''
   })
+
+  const loadReservations = async () => {
+    try {
+      const res = await fetch('/api/user/reservations', {
+        method: 'GET'
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setReservations(data.reservations)
+      } else {
+        toast.error('Erreur lors du chargement des réservations')
+      }
+    } catch (error) {
+      toast.error('Erreur lors du chargement des réservations')
+    }
+  }
+
+  useEffect(() => {
+    loadReservations()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,13 +84,11 @@ export default function MonCompte() {
     const result = await cancelReservation(reservationId)
     if (result.success) {
       toast.success('Réservation annulée')
-      router.refresh()
+      loadReservations()
     } else {
       toast.error('Erreur lors de l\'annulation')
     }
   }
-
-  const reservations = session?.user?.reservations || []
 
   return (
     <div className="container mx-auto p-4">
@@ -185,4 +204,3 @@ export default function MonCompte() {
     </div>
   )
 }
-

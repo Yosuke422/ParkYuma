@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ActiviteWithType } from '@/types'
 import { useRouter } from 'next/navigation'
-import { CalendarDays, Clock, Users, Tag } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { ActiviteWithType } from '@/types'
 
 interface ActiviteClientProps {
   activite: ActiviteWithType
@@ -23,30 +23,32 @@ export default function ActiviteClient({
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleReserver = async () => {
-    try {
-      setLoading(true)
-      setError('')
-      
-      const res = await fetch(`/api/activites/${activite.id}/reserver`, {
-        method: 'POST'
-      })
+const handleReserver = async () => {
+  console.log("Réserver button clicked");
+  try {
+    setLoading(true)
+    setError('')
+    
+    const res = await fetch(`/api/activites/${activite.id}/reserver`, {
+      method: 'POST'
+    })
 
-      if (res.ok) {
-        toast.success('Réservation effectuée avec succès !')
-        router.refresh()
-      } else {
-        const data = await res.json()
-        toast.error(data.error || 'Erreur lors de la réservation')
-        setError(data.error || 'Erreur lors de la réservation')
-      }
-    } catch (error) {
-      toast.error('Erreur lors de la réservation')
-      setError('Erreur lors de la réservation')
-    } finally {
-      setLoading(false)
+    if (res.ok) {
+      toast.success('Réservation effectuée avec succès !')
+      router.refresh()
+    } else {
+      const data = await res.json()
+      toast.error(data.error || 'Erreur lors de la réservation')
+      setError(data.error || 'Erreur lors de la réservation')
     }
+  } catch (error) {
+    toast.error('Erreur lors de la réservation')
+    setError('Erreur lors de la réservation')
+  } finally {
+    setLoading(false)
   }
+}
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -64,7 +66,6 @@ export default function ActiviteClient({
       <div className="card-content">
         <h3 className="card-title">{activite.nom}</h3>
         <span className="badge">{activite.type.nom}</span>
-        
         <p className="card-description">{activite.description}</p>
         
         <div className="card-details">
@@ -72,9 +73,8 @@ export default function ActiviteClient({
             <CalendarDays className="icon" />
             <span>{formatDate(activite.datetimeDebut)}</span>
           </div>
-          
           <div className="detail-item">
-            <span className="icon">{/* Icône horloge */}</span>
+            <span className="icon">{/* Horloge Icon */}</span>
             <span>{activite.duree} minutes</span>
           </div>
         </div>
@@ -88,21 +88,14 @@ export default function ActiviteClient({
               disabled={activite.placesDisponibles === 0 || loading}
               className={`btn btn-primary ${loading ? 'btn-loading' : ''}`}
             >
-              {loading ? 'Réservation...' : 
-                activite.placesDisponibles === 0 ? 'Complet' : 'Réserver'}
+              {loading ? 'Réservation...' : activite.placesDisponibles === 0 ? 'Complet' : 'Réserver'}
             </button>
           ) : (
             <>
-              <button 
-                onClick={() => onModifier?.(activite.id)}
-                className="btn btn-secondary"
-              >
+              <button onClick={() => onModifier?.(activite.id)} className="btn btn-secondary">
                 Modifier
               </button>
-              <button 
-                onClick={() => onSupprimer?.(activite.id)}
-                className="btn btn-danger"
-              >
+              <button onClick={() => onSupprimer?.(activite.id)} className="btn btn-danger">
                 Supprimer
               </button>
             </>
@@ -111,4 +104,4 @@ export default function ActiviteClient({
       </div>
     </div>
   )
-} 
+}
