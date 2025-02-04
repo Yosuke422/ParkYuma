@@ -10,12 +10,21 @@ export async function DELETE() {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
+    const userId = Number(session.user.id)
+    
+    // Suppression de l'utilisateur
     await prisma.user.delete({
-      where: { id: session.user.id }
+      where: { id: userId }
     })
 
-    return NextResponse.json({ message: 'Compte supprimé' })
+    // Retourner une réponse avec un flag pour indiquer qu'il faut déconnecter
+    return NextResponse.json({ 
+      message: 'Compte supprimé',
+      shouldLogout: true 
+    })
+
   } catch (error) {
+    console.error('Erreur de suppression:', error)
     return NextResponse.json(
       { error: 'Erreur lors de la suppression' },
       { status: 500 }
