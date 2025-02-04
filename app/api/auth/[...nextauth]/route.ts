@@ -45,7 +45,9 @@ export const authOptions: AuthOptions = {
           id: user.id.toString(),
           email: user.email,
           name: `${user.prenom} ${user.nom}`,
-          role: user.role
+          role: user.role,
+          prenom: user.prenom,
+          nom: user.nom
         }
       }
     })

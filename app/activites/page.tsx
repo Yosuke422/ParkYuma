@@ -1,9 +1,8 @@
-import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import prisma from '@/lib/prisma'
 import ActiviteClient from '@/components/ActiviteClient'
-import RechercheActivites from '@/components/activites/RechercheActivites'
+import prisma from '@/lib/prisma'
 import { ActiviteWithType } from '@/types'
+import { getServerSession } from 'next-auth'
 
 export default async function Activites() {
   const session = await getServerSession(authOptions)
@@ -14,7 +13,12 @@ export default async function Activites() {
     orderBy: {
       datetimeDebut: 'asc'
     }
-  })
+  }).then(activites => 
+    activites.map(activite => ({
+      ...activite,
+      datetimeDebut: activite.datetimeDebut.toISOString()
+    }))
+  )
 
   return (
     <main>
