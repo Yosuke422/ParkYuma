@@ -6,21 +6,78 @@ import { authOptions } from '@/lib/auth'
 export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    
+    if (!session?.user?.id) {
+      console.log('Session invalide:', session)
+      return NextResponse.json({ error: 'Session invalide' }, { status: 401 })
     }
 
     const { prenom, nom, email } = await req.json()
+    
+    if (!prenom || !nom || !email) {
+      return NextResponse.json(
+        { error: 'Tous les champs sont requis' },
+        { status: 400 }
+      )
+    }
 
-    const user = await prisma.user.update({
-      where: { id: session.user.id },
-      data: { prenom, nom, email }
+    const userId = Number(session.user.id)
+    
+    if (isNaN(userId)) {
+      console.error('ID utilisateur invalide:', session.user.id)
+      return NextResponse.json(
+        { error: 'ID utilisateur invalide' },
+        { status: 400 }
+      )
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId }
     })
 
-    return NextResponse.json(user)
+    if (!existingUser) {
+      return NextResponse.json(
+        { error: 'Utilisateur non trouvé' },
+        { status: 404 }
+      )
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        prenom,
+        nom,
+        email
+      },
+      select: {
+        id: true,
+        prenom: true,
+        nom: true,
+        email: true,
+        role: true
+      }
+    })
+
+    return NextResponse.json({
+      message: 'Utilisateur mis à jour avec succès',
+      user: updatedUser
+    })
+
   } catch (error) {
+    console.error('Erreur détaillée:', error)
+    
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Cet email est déjà utilisé' },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json(
-      { error: 'Erreur lors de la mise à jour' },
+      { 
+        error: 'Erreur lors de la mise à jour',
+        message: error.message
+      },
       { status: 500 }
     )
   }
