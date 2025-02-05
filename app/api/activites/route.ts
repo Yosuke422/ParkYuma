@@ -9,9 +9,7 @@ export async function POST(request: Request) {
     if (session?.user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
-
     const { nom, description, typeId, placesDisponibles, datetimeDebut, duree } = await request.json()
-
     const activite = await prisma.activite.create({
       data: {
         nom,
@@ -25,7 +23,6 @@ export async function POST(request: Request) {
         type: true
       }
     })
-
     return NextResponse.json(activite)
   } catch (error) {
     console.error('Erreur création activité:', error)

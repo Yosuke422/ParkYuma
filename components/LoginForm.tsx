@@ -10,17 +10,17 @@ export default function LoginForm() {
   const pathname = usePathname();
  
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault(); 
  
-    // Get data from form
+    
     const email = e.currentTarget.email.value.trim();
     const password = e.currentTarget.password.value.trim();
-    // If any data is empty
+    
     if (email == "" || password == "") {
       setError(<p>All fields are required</p>);
     } else {
       try {
-        // Fetch "/api/login" route
+        
         const response = await fetch("/api/login", {
           method: "POST",
           headers: {
@@ -31,15 +31,15 @@ export default function LoginForm() {
             password,
           }),
         });
-        // If there is an error
+        
         if (!response.ok || response.status >= 300) {
           const { message } = await response.json();
           setError(<p>{message}</p>);
         } else {
           if (pathname.startsWith("/login")) {
-            router.push("/mon-compte"); // Redirect to /mon-compte page
+            router.push("/mon-compte"); 
           }
-          router.refresh(); // Keep this page
+          router.refresh(); 
         }
       } catch (error) {
         console.error(error);

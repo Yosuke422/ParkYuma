@@ -1,23 +1,28 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { redirect } from 'next/navigation'
-import prisma from '@/lib/prisma'
-import Link from 'next/link'
-import AdminActiviteList from '@/components/admin/AdminActiviteList'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+import Link from "next/link";
+import AdminActiviteList from "@/components/admin/AdminActiviteList";
 
 export default async function AdminActivites() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session?.user?.email || session.user.role !== 'ADMIN') {
-    redirect('/')
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email || session.user.role !== "ADMIN") {
+    redirect("/");
   }
 
-  const activites = await prisma.activite.findMany({
-    include: {
-      type: true,
-      reservations: true
-    }
-  })
+  const activites = (
+    await prisma.activite.findMany({
+      include: {
+        type: true,
+        reservations: true,
+      },
+    })
+  ).map((activite) => ({
+    ...activite,
+    datetimeDebut: activite.datetimeDebut.toISOString(),
+  }));
 
   return (
     <div className="admin-page">
@@ -26,7 +31,7 @@ export default async function AdminActivites() {
           <div className="header-content">
             <h1 className="page-title">Gestion des activités</h1>
             <Link href="/admin/activites/new" className="btn btn-primary">
-              Nouvelle activité
+              Créer une activité
             </Link>
           </div>
         </header>
@@ -36,5 +41,5 @@ export default async function AdminActivites() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

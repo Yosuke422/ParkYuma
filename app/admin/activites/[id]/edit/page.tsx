@@ -34,7 +34,7 @@ export default async function EditActivite({
           <h1 className="page-title">Modifier l'activité</h1>
         </header>
         <div className="form-container">
-          <ActiviteForm activite={activite} types={types} />
+          <ActiviteForm activite={{ ...activite, datetimeDebut: activite.datetimeDebut.toISOString() }} types={types} />
         </div>
       </div>
     </div>

@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Moon, Sun } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { Moon, Sun } from "lucide-react";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light'
-    setTheme(savedTheme)
-    document.documentElement.setAttribute('data-theme', savedTheme)
-  }, [])
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-    document.documentElement.setAttribute('data-theme', newTheme)
-  }
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   return (
     <button
@@ -25,11 +25,11 @@ export default function ThemeToggle() {
       className="theme-toggle"
       aria-label="Toggle theme"
     >
-      {theme === 'light' ? (
+      {theme === "light" ? (
         <Moon className="w-5 h-5" />
       ) : (
         <Sun className="w-5 h-5" />
       )}
     </button>
-  )
-} 
+  );
+}

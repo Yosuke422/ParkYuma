@@ -12,9 +12,7 @@ export async function PUT(
     if (session?.user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
-
     const { nom, description, typeId, placesDisponibles, datetimeDebut, duree } = await request.json()
-
     const activite = await prisma.activite.update({
       where: { id: parseInt(params.id) },
       data: {
@@ -29,7 +27,6 @@ export async function PUT(
         type: true
       }
     })
-
     return NextResponse.json(activite)
   } catch (error) {
     console.error('Erreur modification activité:', error)

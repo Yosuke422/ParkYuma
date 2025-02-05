@@ -73,9 +73,8 @@ export const authOptions: NextAuthOptions = {
       console.log('Session Callback - Session avant:', session)
       
       if (session.user) {
-        session.user.id = Number(token.sub)
+        session.user.id = token.sub as string
         session.user.role = token.role as string
-        session.user.name = `${token.nom} ${token.prenom}`
         session.user.nom = token.nom as string
         session.user.prenom = token.prenom as string
       }

@@ -26,7 +26,6 @@ export default function MesActivites() {
   const [loading, setLoading] = useState<boolean>(false)
   const [reservations, setReservations] = useState<Reservation[]>([])
 
-  // Fetch the reserved activities from the API
   const fetchReservations = async () => {
     try {
       setLoading(true)
@@ -45,13 +44,12 @@ export default function MesActivites() {
   }
 
   useEffect(() => {
-    // Only fetch if the user is logged in
+    
     if (session) {
       fetchReservations()
     }
   }, [session])
 
-  // If the user is not logged in, prompt them to log in
   if (!session) {
     return (
       <div className="container mx-auto p-4">
@@ -84,7 +82,6 @@ export default function MesActivites() {
           {reservations.map((reservation) => (
             <div key={reservation.id} className="card">
               <div className="card-content relative">
-                {/* Shine effect for a modern card hover effect */}
                 <div className="shine"></div>
                 <h2 className="card-title">{reservation.activite.nom}</h2>
                 <span className="badge">

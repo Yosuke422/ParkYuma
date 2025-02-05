@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   try {
-    // Créer l'admin par défaut
+    
     const adminPassword = await hash('admin123', 10)
     const admin = await prisma.user.upsert({
       where: { email: 'admin@example.com' },
@@ -21,7 +21,7 @@ async function main() {
 
     console.log('Admin créé:', admin)
 
-    // Reste du seed...
+    
     await prisma.typeActivite.deleteMany()
     const types = [
       { nom: 'Sport' },

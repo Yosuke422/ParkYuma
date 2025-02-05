@@ -66,7 +66,7 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error('Erreur détaillée:', error)
     
-    if (error.code === 'P2002') {
+    if ((error as any).code === 'P2002') {
       return NextResponse.json(
         { error: 'Cet email est déjà utilisé' },
         { status: 400 }
@@ -76,7 +76,7 @@ export async function PUT(req: Request) {
     return NextResponse.json(
       { 
         error: 'Erreur lors de la mise à jour',
-        message: error.message
+        message: (error as Error).message
       },
       { status: 500 }
     )
