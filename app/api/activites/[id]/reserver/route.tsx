@@ -29,7 +29,6 @@ export async function POST(
       where: { email: session.user.email }
     })
 
-    // Create the reservation and update available places in a transaction
     const reservation = await prisma.$transaction(async (tx) => {
       const reservation = await tx.reservation.create({
         data: {
@@ -38,14 +37,12 @@ export async function POST(
           etat: true
         }
       })
-
       await tx.activite.update({
         where: { id: activite.id },
         data: {
           placesDisponibles: { decrement: 1 }
         }
       })
-
       return reservation
     })
 

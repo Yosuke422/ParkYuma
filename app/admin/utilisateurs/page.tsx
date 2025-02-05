@@ -32,4 +32,4 @@ export default async function AdminUsers() {
       <UsersTable users={users} />
     </div>
   )
-} 
+}

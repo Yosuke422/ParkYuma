@@ -74,7 +74,6 @@ const handleReserver = async () => {
             <span>{formatDate(activite.datetimeDebut)}</span>
           </div>
           <div className="detail-item">
-            <span className="icon">{/* Horloge Icon */}</span>
             <span>{activite.duree} minutes</span>
           </div>
         </div>

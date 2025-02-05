@@ -22,7 +22,11 @@ export default function UsersTable({ users }: { users: UserWithCount[] }) {
   const [loading, setLoading] = useState<number | null>(null)
 
   const handleRoleToggle = async (userId: number, currentRole: string) => {
-    if (!confirm(`Êtes-vous sûr de vouloir ${currentRole === 'ADMIN' ? 'révoquer' : 'donner'} les droits d'administrateur ?`)) {
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir ${currentRole === 'ADMIN' ? 'révoquer' : 'donner'} les droits d'administrateur ?`
+      )
+    ) {
       return
     }
 
@@ -50,33 +54,23 @@ export default function UsersTable({ users }: { users: UserWithCount[] }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg">
-        <thead className="bg-gray-50">
+    <div className="overflow-x-auto admin-list">
+      <table className="min-w-full">
+        <thead className="table-header">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Utilisateur
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Rôle
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Réservations
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
+            <th className="table-th">Utilisateur</th>
+            <th className="table-th">Email</th>
+            <th className="table-th">Rôle</th>
+            <th className="table-th">Réservations</th>
+            <th className="table-th text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {users.map((user) => (
-            <tr key={user.id}>
-              <td className="px-6 py-4 whitespace-nowrap">
+            <tr key={user.id} className="table-row">
+              <td className="table-td">
                 <div className="flex items-center">
-                  <User className="h-5 w-5 text-gray-400 mr-2" />
+                  <User className="icon mr-2" />
                   <div>
                     <div className="font-medium">{user.prenom} {user.nom}</div>
                     <div className="text-sm text-gray-500">
@@ -85,30 +79,26 @@ export default function UsersTable({ users }: { users: UserWithCount[] }) {
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {user.email}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  user.role === 'ADMIN' 
-                    ? 'bg-purple-100 text-purple-800' 
-                    : 'bg-green-100 text-green-800'
-                }`}>
+              <td className="table-td">{user.email}</td>
+              <td className="table-td">
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    user.role === 'ADMIN'
+                      ? 'role-admin'
+                      : 'role-user'
+                  }`}
+                >
                   {user.role}
                 </span>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="table-td text-sm text-gray-500">
                 {user._count.reservations}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td className="table-td text-right">
                 <button
                   onClick={() => handleRoleToggle(user.id, user.role)}
                   disabled={loading === user.id}
-                  className={`inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md ${
-                    user.role === 'ADMIN'
-                      ? 'text-red-700 bg-red-100 hover:bg-red-200'
-                      : 'text-green-700 bg-green-100 hover:bg-green-200'
-                  }`}
+                  className="action-button"
                 >
                   {loading === user.id ? (
                     'Chargement...'
@@ -116,13 +106,13 @@ export default function UsersTable({ users }: { users: UserWithCount[] }) {
                     <>
                       {user.role === 'ADMIN' ? (
                         <>
-                          <ShieldOff className="h-4 w-4 mr-2" />
-                          Révoquer admin
+                          <ShieldOff className="action-icon" />
+                          <span className="action-label">Révoquer</span>
                         </>
                       ) : (
                         <>
-                          <Shield className="h-4 w-4 mr-2" />
-                          Rendre admin
+                          <Shield className="action-icon" />
+                          <span className="action-label">Donner</span>
                         </>
                       )}
                     </>
@@ -133,6 +123,11 @@ export default function UsersTable({ users }: { users: UserWithCount[] }) {
           ))}
         </tbody>
       </table>
+      {users.length === 0 && (
+        <div className="empty-state">
+          <p>Aucun utilisateur trouvé</p>
+        </div>
+      )}
     </div>
   )
-} 
+}

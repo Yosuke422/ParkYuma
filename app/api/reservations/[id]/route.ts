@@ -31,13 +31,10 @@ export async function PATCH(
       )
     }
 
-    // Mise à jour de la réservation
     const updatedReservation = await prisma.reservation.update({
       where: { id: parseInt(params.id) },
       data: { etat: false }
     })
-
-    // Mise à jour des places disponibles
     await prisma.activite.update({
       where: { id: reservation.activiteId },
       data: {

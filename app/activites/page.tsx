@@ -1,24 +1,26 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import ActiviteClient from '@/components/ActiviteClient'
-import prisma from '@/lib/prisma'
-import { ActiviteWithType } from '@/types'
-import { getServerSession } from 'next-auth'
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import ActiviteClient from "@/components/ActiviteClient";
+import prisma from "@/lib/prisma";
+import { ActiviteWithType } from "@/types";
+import { getServerSession } from "next-auth";
 
 export default async function Activites() {
-  const session = await getServerSession(authOptions)
-  const activites = await prisma.activite.findMany({
-    include: {
-      type: true,
-    },
-    orderBy: {
-      datetimeDebut: 'asc'
-    }
-  }).then(activites => 
-    activites.map(activite => ({
-      ...activite,
-      datetimeDebut: activite.datetimeDebut.toISOString()
-    }))
-  )
+  const session = await getServerSession(authOptions);
+  const activites = await prisma.activite
+    .findMany({
+      include: {
+        type: true,
+      },
+      orderBy: {
+        datetimeDebut: "asc",
+      },
+    })
+    .then((activites) =>
+      activites.map((activite) => ({
+        ...activite,
+        datetimeDebut: activite.datetimeDebut.toISOString(),
+      }))
+    );
 
   return (
     <main>
@@ -32,10 +34,10 @@ export default async function Activites() {
       <section className="container activities-container">
         <div className="activities-grid">
           {activites.map((activite: ActiviteWithType) => (
-            <ActiviteClient 
+            <ActiviteClient
               key={activite.id}
               activite={activite}
-              isAdmin={session?.user?.role === 'ADMIN'}
+              isAdmin={session?.user?.role === "ADMIN"}
             />
           ))}
         </div>
@@ -47,5 +49,5 @@ export default async function Activites() {
         )}
       </section>
     </main>
-  )
-} 
+  );
+}

@@ -1,33 +1,26 @@
+
+
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import prisma from '@/lib/prisma'
-import { authOptions } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route' 
 
-export async function DELETE() {
-  try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
-    }
-
-    const userId = Number(session.user.id)
-    
-    // Suppression de l'utilisateur
-    await prisma.user.delete({
-      where: { id: userId }
-    })
-
-    // Retourner une réponse avec un flag pour indiquer qu'il faut déconnecter
-    return NextResponse.json({ 
-      message: 'Compte supprimé',
-      shouldLogout: true 
-    })
-
-  } catch (error) {
-    console.error('Erreur de suppression:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la suppression' },
-      { status: 500 }
-    )
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions)
+  
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
-} 
+  try {
+    await prisma.reservation.deleteMany({
+      where: { userId: Number(session.user.id) } 
+    })
+    await prisma.user.delete({
+      where: { email: session.user.email }
+    })
+    return NextResponse.json({ message: 'Account deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting account:', error)
+    return NextResponse.json({ error: 'Error deleting account' }, { status: 500 })
+  }
+}
