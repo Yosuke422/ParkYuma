@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]/route'
+import { sendEmail } from '@/lib/email'
 
 export async function PATCH(
   request: Request,
@@ -16,15 +17,15 @@ export async function PATCH(
       )
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
     const reservation = await prisma.reservation.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(params.id) },
+      include: {
+        activite: true,
+        user: true
+      }
     })
 
-    if (!reservation || reservation.userId !== user?.id) {
+    if (!reservation || reservation.user.email !== session.user.email) {
       return NextResponse.json(
         { error: 'Réservation non trouvée' },
         { status: 404 }
@@ -43,6 +44,14 @@ export async function PATCH(
         }
       }
     })
+
+    // Envoyer l'email d'annulation
+    await sendEmail(
+      session.user.email,
+      reservation.activite.nom,
+      reservation.activite.datetimeDebut.toISOString(),
+      reservation.activite.duree
+    )
 
     return NextResponse.json(updatedReservation)
   } catch (error) {

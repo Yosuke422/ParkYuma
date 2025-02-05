@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../auth/[...nextauth]/route'
+import { sendEmail } from '@/lib/email'
 
 export async function POST(
   request: Request,
@@ -14,7 +15,8 @@ export async function POST(
     }
 
     const activite = await prisma.activite.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(params.id) },
+      include: { type: true }
     })
 
     if (!activite) {
@@ -45,6 +47,22 @@ export async function POST(
       })
       return reservation
     })
+
+    // Avant l'envoi de l'email
+    console.log('Préparation envoi email pour:', session.user.email)
+    
+    // Envoyer l'email de confirmation
+    try {
+      await sendEmail(
+        session.user.email,
+        activite.nom,
+        activite.datetimeDebut.toISOString(),
+        activite.duree
+      )
+    } catch (error) {
+      console.error('Erreur envoi email:', error)
+      // On continue même si l'email échoue
+    }
 
     return NextResponse.json(reservation)
   } catch (error) {
