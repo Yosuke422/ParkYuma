@@ -1,16 +1,37 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ActiviteClient from "@/components/ActiviteClient";
+import SearchBar from "@/components/SearchBar";
 import prisma from "@/lib/prisma";
 import { ActiviteWithType } from "@/types";
 import { getServerSession } from "next-auth";
 
-export default async function Activites() {
+interface ActivitesPageProps {
+  searchParams: {
+    query?: string
+  };
+}
+
+export default async function Activites({ searchParams }: ActivitesPageProps)  {
   const session = await getServerSession(authOptions);
+  const userId = session?.user?.id ? Number(session.user.id) : null
+  const filter = searchParams.query || "";
+
   const activites = await prisma.activite
     .findMany({
+      where: {
+        nom: {
+          contains: filter,
+          mode: "insensitive", 
+        },
+      },
       include: {
         type: true,
-      },
+        reservations: userId
+        ? {
+            where: { userId }, 
+        }
+        : false,
+    },
       orderBy: {
         datetimeDebut: "asc",
       },
@@ -20,7 +41,13 @@ export default async function Activites() {
         ...activite,
         datetimeDebut: activite.datetimeDebut.toISOString(),
       }))
-    );
+    )
+
+    const activitesWithReservedFlag = activites.map((activite) => ({
+      ...activite,
+      datetimeDebut: activite.datetimeDebut.toString(),
+      isReserved: activite.reservations && activite.reservations.length > 0,
+    }));
 
   return (
     <main>
@@ -30,10 +57,12 @@ export default async function Activites() {
           <p>Réservez vos places pour nos activités exclusives</p>
         </div>
       </section>
-
+      <section className="container">
+        <SearchBar initialQuery={filter} />
+      </section>
       <section className="container activities-container">
         <div className="activities-grid">
-          {activites.map((activite: ActiviteWithType) => (
+          {activitesWithReservedFlag.map((activite: ActiviteWithType) => (
             <ActiviteClient
               key={activite.id}
               activite={activite}
@@ -41,12 +70,6 @@ export default async function Activites() {
             />
           ))}
         </div>
-
-        {activites.length === 0 && (
-          <div className="empty-state">
-            <p>Aucune activité n'est disponible pour le moment</p>
-          </div>
-        )}
       </section>
     </main>
   );

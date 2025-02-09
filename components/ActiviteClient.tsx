@@ -7,18 +7,17 @@ import toast from 'react-hot-toast'
 import { ActiviteWithType } from '@/types'
 
 interface ActiviteClientProps {
-  activite: ActiviteWithType
+  activite: ActiviteWithType & {
+    isReserved?: boolean; 
+  };
   isAdmin: boolean
-  onModifier?: (id: number) => void
-  onSupprimer?: (id: number) => void
 }
 
 export default function ActiviteClient({ 
   activite, 
   isAdmin,
-  onModifier,
-  onSupprimer 
 }: ActiviteClientProps) {
+  const [isReserved, setIsReserved] = useState(!!activite.isReserved)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -35,6 +34,7 @@ const handleReserver = async () => {
 
     if (res.ok) {
       toast.success('Réservation effectuée avec succès !')
+      setIsReserved(true)
       router.refresh()
     } else {
       const data = await res.json()
@@ -48,6 +48,32 @@ const handleReserver = async () => {
     setLoading(false)
   }
 }
+
+const handleAnnuler = async () => {
+  try {
+    setLoading(true);
+    setError("");
+
+    const res = await fetch(`/api/activites/${activite.id}/delete`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      toast.success("Réservation annulée avec succès !");
+      setIsReserved(false);
+      router.refresh();
+    } else {
+      const data = await res.json();
+      toast.error(data.error || "Erreur lors de l'annulation");
+      setError(data.error || "Erreur lors de l'annulation");
+    }
+  } catch (err) {
+    toast.error("Erreur lors de l'annulation");
+    setError("Erreur lors de l'annulation");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const formatDate = (dateString: string) => {
@@ -81,22 +107,29 @@ const handleReserver = async () => {
         {error && <div className="error-message">{error}</div>}
 
         <div className="card-actions">
-          {!isAdmin ? (
-            <button 
-              onClick={handleReserver}
-              disabled={activite.placesDisponibles === 0 || loading}
-              className={`btn btn-primary ${loading ? 'btn-loading' : ''}`}
-            >
-              {loading ? 'Réservation...' : activite.placesDisponibles === 0 ? 'Complet' : 'Réserver'}
-            </button>
-          ) : (
+        {!isAdmin && (
             <>
-              <button onClick={() => onModifier?.(activite.id)} className="btn btn-secondary">
-                Modifier
-              </button>
-              <button onClick={() => onSupprimer?.(activite.id)} className="btn btn-danger">
-                Supprimer
-              </button>
+              {!isReserved ? (
+                <button
+                  onClick={handleReserver}
+                  disabled={activite.placesDisponibles === 0 || loading}
+                  className={`btn btn-primary ${loading ? "btn-loading" : ""}`}
+                >
+                  {loading
+                    ? "Réservation..."
+                    : activite.placesDisponibles === 0
+                    ? "Complet"
+                    : "Réserver"}
+                </button>
+              ) : (
+                <button
+                  onClick={handleAnnuler}
+                  disabled={loading}
+                  className={`btn btn-danger ${loading ? "btn-loading" : ""}`}
+                >
+                  {loading ? "Annulation..." : "Annuler"}
+                </button>
+              )}
             </>
           )}
         </div>

@@ -8,7 +8,6 @@ export async function PUT(req: Request) {
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
-      console.log('Session invalide:', session)
       return NextResponse.json({ error: 'Session invalide' }, { status: 401 })
     }
 
