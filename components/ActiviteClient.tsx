@@ -91,12 +91,6 @@ const handleReserver = async () => {
             </button>
           ) : (
             <>
-              <button onClick={() => onModifier?.(activite.id)} className="btn btn-secondary">
-                Modifier
-              </button>
-              <button onClick={() => onSupprimer?.(activite.id)} className="btn btn-danger">
-                Supprimer
-              </button>
             </>
           )}
         </div>
