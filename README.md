@@ -1,7 +1,12 @@
 # ParkYuma
 
 Youssef Charafeddine et Maxime Britto
-
+Pour initilaser prisma et creer
+le User admin  automatiquement veuillez mettre ces commandes: 
+```
+npx prisma generate
+npx prisma db seed
+```
 pour faire fonctionner le service mail lors d'une reservation veuillez ajouter ci-dessous dans le .env
 ```
 EMAIL_SERVER_HOST="smtp.gmail.com"
